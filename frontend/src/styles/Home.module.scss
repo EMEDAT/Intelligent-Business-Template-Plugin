@@ -1,0 +1,70 @@
+@import './variables.scss';
+
+/* Container for the whole page */
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main content styles */
+.mainContent {
+  flex: 1; /* Pushes the footer to the bottom */
+  padding: 20px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+}
+
+/* Input section */
+.inputSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
+}
+
+/* Template cards container */
+.templates {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Input field */
+.inputField {
+  width: 80%;
+  max-width: 300px;
+  padding: 10px;
+  margin-bottom: 10px;
+
+  @media (min-width: 768px) {
+    margin-bottom: 0;
+  }
+}
+
+/* Button */
+.generateButton {
+  padding: 10px 20px;
+  background-color: $primary-color;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+
+  

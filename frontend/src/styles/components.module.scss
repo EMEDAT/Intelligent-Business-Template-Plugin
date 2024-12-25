@@ -1,0 +1,110 @@
+// frontend\src\styles\components.module.scss
+
+@import './variables.scss';
+
+.header {
+  background-color: $header-background-color;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+
+  .logo {
+    height: 50px; /* Adjust as necessary */
+    width: auto;  /* Maintain the aspect ratio */
+    max-height: 80px; /* Prevent the logo from exceeding a certain size */
+    margin-right: 15px; /* Add spacing between the logo and navigation */
+    object-fit: contain; /* Ensure the logo fits nicely inside the bounds */
+  }
+
+  nav {
+    position: relative;
+
+    .menuButton {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+    }
+
+    ul {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        margin: 0 10px;
+      }
+
+      @media (max-width: 768px) {
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: linear-gradient(180deg, $primary-color, $secondary-color);
+        padding: 12px 15px;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        li {
+          margin: 12px 0;
+          padding: 8px 12px;
+          width: 70%;
+          text-align: left;
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+    }
+
+    .showMenu {
+      display: flex;
+    }
+
+    @media (max-width: 768px) {
+      .menuButton {
+        display: block;
+      }
+    }
+  }
+}
+
+.footer {
+  background-color: $footer-background-color;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  margin-top: auto;
+  width: 100%;
+  position: relative; /* Ensure it doesn't overlap content */
+}
+
+.templateCard {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 20px;
+  text-align: center;
+}
+
+.inputField {
+  padding: 10px;
+  width: 300px;
+}
+
+.generateButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
