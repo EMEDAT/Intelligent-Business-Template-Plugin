@@ -1,13 +1,7 @@
-import os
-from dotenv import load_dotenv
 from flask import Flask
 from app.routes import nlp, integration, template_generator, test
 from app.utils.config import configure_app, initialize_firebase
 from app.routes.settings import settings_bp
-from app.routes.template_generator import bp as template_bp
-
-# This will load environment variables from .env
-load_dotenv()
 
 def create_app():
     app = Flask(__name__)

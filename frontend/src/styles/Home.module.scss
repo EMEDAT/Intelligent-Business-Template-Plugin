@@ -32,6 +32,23 @@
   }
 }
 
+.activeSaveOption {
+  background-color: #007bff; // Example active style
+  color: white;
+}
+
+.keyPointsTextarea {
+  width: 100%;
+  height: 200px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-family: monospace;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
+}
+
 /* Template cards container */
 .templates {
   display: flex;
@@ -66,5 +83,15 @@
   cursor: pointer;
 }
 
+.exportButton {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: $primary-color;
+  color: white;
+  border: none;
+  cursor: pointer;
 
-  
+  &:hover {
+    background-color: darken($primary-color, 10%);
+  }
+}

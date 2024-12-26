@@ -1,69 +1,101 @@
 import os
+import io
+import re
+import pdfkit
+import tempfile
 from docx import Document
 from pptx import Presentation
-import pdfkit
+from typing import List, Dict
 
-# Base directory for exported files
-EXPORT_DIR = "./exports"
-os.makedirs(EXPORT_DIR, exist_ok=True)
+def format_template_content(title: str, key_points: List[str]) -> str:
+    """Formats template content with numbering and newlines."""
+    if not key_points:
+        return f"{title}:\nNo key points provided."
 
-def create_template(template_type, key_points):
+    numbered_points = []
+    for i, point in enumerate(key_points):
+        numbered_points.append(f"{i + 1}. {point}")
+
+    return f"{title}:\n\n" + "\n".join(numbered_points)
+
+def create_template(template_type: str, key_points: List[str]) -> Dict[str, str]:
     if template_type == "business_plan":
         return generate_business_plan(key_points)
     elif template_type == "pitch_deck":
         return generate_pitch_deck(key_points)
     elif template_type == "marketing_strategy":
         return generate_marketing_strategy(key_points)
-    return {"error": "Unknown template type"}
+    else:
+        return {"error": "Unknown template type", "content": ""}
 
-# Generate a business plan based on extracted key points
-def generate_business_plan(key_points):
-    key_points_text = '\n'.join(key_points)
-    content = f"Business Plan:\n{key_points_text}"
-    return {
-        "template_type": "business_plan",
-        "content": content
-    }
+def generate_business_plan(key_points: List[str]) -> Dict[str, str]:
+    content = format_template_content("Business Plan", key_points)
+    return {"template_type": "business_plan", "content": content}
 
-# Generate a pitch deck based on extracted key points
-def generate_pitch_deck(key_points):
-    key_points_text = '\n'.join(key_points)
-    content = f"Pitch Deck:\n{key_points_text}"
-    return {
-        "template_type": "pitch_deck",
-        "content": content
-    }
+def generate_pitch_deck(key_points: List[str]) -> Dict[str, str]:
+    content = format_template_content("Pitch Deck", key_points)
+    return {"template_type": "Pitch Deck", "content": content}
 
-# Generate a marketing strategy based on extracted key points
-def generate_marketing_strategy(key_points):
-    key_points_text = '\n'.join(key_points)
-    content = f"Marketing Strategy:\n{key_points_text}"
-    return {
-        "template_type": "marketing_strategy",
-        "content": content
-    }
+def generate_marketing_strategy(key_points: List[str]) -> Dict[str, str]:
+    content = format_template_content("Marketing Strategy", key_points)
+    return {"template_type": "Marketing Strategy", "content": content}
 
-# Export templates
-def export_as_word(template_content, file_name):
-    file_path = os.path.join(EXPORT_DIR, f"{file_name}.docx")
-    doc = Document()
-    doc.add_heading("Template", level=1)
-    doc.add_paragraph(template_content)
-    doc.save(file_path)
-    return file_path
+def export_as_word(template_content: str) -> bytes:
+    if not template_content:
+        return b""
+    try:
+        doc = Document()
+        doc.add_paragraph(template_content)
+        file_stream = io.BytesIO()
+        doc.save(file_stream)
+        return file_stream.getvalue()  # Correct: Return the bytes
+    except Exception as e:
+        print(f"Word Export Error: {e}")
+        return b""
 
-def export_as_pdf(template_content, file_name):
-    file_path = os.path.join(EXPORT_DIR, f"{file_name}.pdf")
-    html_content = f"<h1>Template</h1><p>{template_content}</p>"
-    pdfkit.from_string(html_content, file_path)
-    return file_path
+def export_as_pdf(template_content: str) -> bytes:
+    if not template_content:
+        return b""
+    try:
+        try:
+            template_type, rest_of_content = template_content.split(":", 1)
+        except ValueError: # Handle cases where there is no colon
+            template_type = "Template"
+            rest_of_content = template_content
+        formatted_content = rest_of_content.replace('\n', '<br>')
+        
+        html_content = f"<h1><b>{template_type.strip()}</b></h1><p>{formatted_content.strip()}</p>" # bolding the template type
+        pdf_bytes = pdfkit.from_string(html_content, False)
+        return pdf_bytes
+    except Exception as e:
+        print(f"PDF Export Error: {e}")
+        return b""
 
-def export_as_pptx(template_content, file_name):
-    file_path = os.path.join(EXPORT_DIR, f"{file_name}.pptx")
-    presentation = Presentation()
-    slide = presentation.slides.add_slide(presentation.slide_layouts[5])
-    text_box = slide.shapes.add_textbox(left=0, top=0, width=presentation.slide_width, height=2000000)
-    text_frame = text_box.text_frame
-    text_frame.text = template_content
-    presentation.save(file_path)
-    return file_path
+def export_as_pptx(template_content: str) -> bytes:
+    if not template_content:
+        return b""
+    try:
+        prs = Presentation()
+        slide = prs.slides.add_slide(prs.slide_layouts[5])
+        tf = slide.shapes.add_textbox(0, 0, prs.slide_width, prs.slide_height).text_frame
+        tf.text = template_content
+        file_stream = io.BytesIO()
+        prs.save(file_stream)
+        return file_stream.getvalue() # Correct: Return the bytes
+    except Exception as e:
+        print(f"PowerPoint Export Error: {e}")
+        return b""
+
+def handle_temporary_file(template_content: str, file_name: str, format_type: str) -> str:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        extension = "docx" if format_type == "word" else format_type
+        file_path = os.path.join(temp_dir, f"{file_name}.{extension}")
+        if format_type == "word":
+            export_as_word(template_content, file_path)
+        elif format_type == "pdf":
+            export_as_pdf(template_content, file_path)
+        elif format_type == "pptx":
+            export_as_pptx(template_content, file_path)
+        else:
+            raise ValueError(f"Unsupported format: {format_type}")
+        return file_path
